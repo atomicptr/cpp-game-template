@@ -7,6 +7,13 @@ XBUILD_RAYLIB_VERSION := 5.0
 
 OUT_DIR := bin
 OBJ_DIR := $(OUT_DIR)/obj
+DEPS_DIR := $(OUT_DIR)/deps
+BUILD_RAYLIB_BASE := $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64
+
+DESKTOP_DIR := $(OUT_DIR)/debug/desktop
+DEV_DIR := $(OUT_DIR)/debug/dev
+WEB_DIR := $(OUT_DIR)/debug/web
+XBUILD_DIR := $(OUT_DIR)/release
 
 WARN_FLAGS := -pedantic -Wall -Wextra -Wno-unused-parameter -Werror
 CPP_FLAGS := -std=c++20 $(INCLUDE_DIRS)
@@ -28,31 +35,31 @@ buildrepo:
 $(OBJ_DIR)/%.o: $(SRCS)
 	$(CC) -c $< -o $@ $(CPP_FLAGS)
 
-build: buildrepo $(OBJS)
-	mkdir -p $(OUT_DIR)/target/desktop
-	$(CC) src/platforms/desktop/main.cpp $(OBJS) -lraylib $(CPP_FLAGS) -o $(OUT_DIR)/target/desktop/$(APP_NAME)
+build: buildrepo $(OBJS) $(BUILD_RAYLIB_BASE)
+	mkdir -p $(DESKTOP_DIR)
+	$(CC) src/platforms/desktop/main.cpp $(OBJS) $(CPP_FLAGS) -o $(DESKTOP_DIR)/$(APP_NAME) -L$(BUILD_RAYLIB_BASE)/lib -I$(BUILD_RAYLIB_BASE)/include -lraylib
 
 run: build
-	./$(OUT_DIR)/target/desktop/$(APP_NAME)
+	./$(DESKTOP_DIR)/$(APP_NAME)
 
-__dev_dl: filename = $(OUT_DIR)/target/dev/$(APP_NAME).$(shell date +%s).so
+__dev_dl: filename = $(DEV_DIR)/$(APP_NAME).$(shell date +%s).so
 __dev_dl: filename_tmp = $(filename).tmp
-__dev_dl: buildrepo $(OBJS)
-	mkdir -p $(OUT_DIR)/target/dev
-	$(CC) $(OBJS) -shared $(CPP_FLAGS) -lraylib -o $(filename_tmp)
+__dev_dl: buildrepo $(OBJS) $(BUILD_RAYLIB_BASE)
+	mkdir -p $(DEV_DIR)
+	$(CC) $(OBJS) -shared $(CPP_FLAGS) -o $(filename_tmp) -L$(BUILD_RAYLIB_BASE)/lib -I$(BUILD_RAYLIB_BASE)/include -lraylib
 	mv $(filename_tmp) $(filename)
 
 __dev_game:
-	mkdir -p $(OUT_DIR)/target/dev
-	$(CC) src/platforms/dev/main.cpp ${CPP_FLAGS} -o $(OUT_DIR)/target/dev/$(APP_NAME)
-	./$(OUT_DIR)/target/dev/$(APP_NAME)
+	mkdir -p $(DEV_DIR)
+	$(CC) src/platforms/dev/main.cpp ${CPP_FLAGS} -o $(DEV_DIR)/$(APP_NAME)
+	./$(DEV_DIR)/$(APP_NAME)
 
 dev:
 	bb ./scripts/dev.clj
 
-build-web: buildrepo $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly
-	mkdir -p $(OUT_DIR)/target/web
-	emcc -o $(OUT_DIR)/target/web/index.html src/platforms/web/main.cpp $(SRCS) $(CPP_FLAGS) $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly/lib/libraylib.a -I$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly/include $(WEB_FLAGS)
+build-web: buildrepo $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly
+	mkdir -p $(WEB_DIR)
+	emcc -o $(WEB_DIR)/index.html src/platforms/web/main.cpp $(SRCS) $(CPP_FLAGS) $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly/lib/libraylib.a -I$(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly/include $(WEB_FLAGS)
 
 web: build-web
 	bb ./scripts/web.clj
@@ -63,40 +70,39 @@ clean:
 ### Release Builds / Cross Compilation
 
 ###### Linux
-xbuild-linux: buildrepo $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64
-	rm -rf $(OUT_DIR)/target/x-linux
-	mkdir -p $(OUT_DIR)/target/x-linux
-	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64/lib/libraylib.a -o $(OUT_DIR)/target/x-linux/$(APP_NAME) -target x86_64-linux-gnu -I$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64/include
+xbuild-linux: buildrepo $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64
+	rm -rf $(XBUILD_DIR)/x-linux
+	mkdir -p $(XBUILD_DIR)/x-linux
+	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64/lib/libraylib.a -o $(XBUILD_DIR)/x-linux/$(APP_NAME) -target x86_64-linux-gnu -I$(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64/include
 
-$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64:
-	mkdir -p $(OUT_DIR)/deps
-	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz
-	tar xvf $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz -C $(OUT_DIR)/deps
-	rm $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz
+$(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64:
+	mkdir -p $(DEPS_DIR)
+	cd $(DEPS_DIR) && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz
+	tar xvf $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz -C $(DEPS_DIR)
+	rm $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz
 
 ###### Windows
-xbuild-windows: buildrepo $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64
-	rm -rf $(OUT_DIR)/target/x-windows
-	mkdir -p $(OUT_DIR)/target/x-windows
-	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) -o $(OUT_DIR)/target/x-windows/$(APP_NAME).exe -target x86_64-windows -L$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/lib -I$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/include -lraylibdll
-	cp $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/lib/raylib.dll $(OUT_DIR)/target/x-windows
+xbuild-windows: buildrepo $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64
+	rm -rf $(XBUILD_DIR)/x-windows
+	mkdir -p $(XBUILD_DIR)/x-windows
+	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) -o $(XBUILD_DIR)/x-windows/$(APP_NAME).exe -target x86_64-windows -L$(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/lib -I$(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/include -lraylibdll
+	cp $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/lib/raylib.dll $(XBUILD_DIR)/x-windows
 
-$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64:
-	mkdir -p $(OUT_DIR)/deps
-	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64.zip
-	unzip $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64 -d $(OUT_DIR)/deps
-	rm $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64.zip 
-
+$(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64:
+	mkdir -p $(DEPS_DIR)
+	cd $(DEPS_DIR) && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64.zip
+	unzip $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64 -d $(DEPS_DIR)
+	rm $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64.zip 
 
 ###### Web
-xbuild-web: buildrepo $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly
-	rm -rf $(OUT_DIR)/target/x-web
-	mkdir -p $(OUT_DIR)/target/x-web
-	emcc -o $(OUT_DIR)/target/x-web/index.html src/platforms/web/main.cpp $(SRCS) $(CPP_FLAGS) $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly/lib/libraylib.a -I$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly/include $(WEB_FLAGS)
+xbuild-web: buildrepo $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly
+	rm -rf $(XBUILD_DIR)/x-web
+	mkdir -p $(XBUILD_DIR)/x-web
+	emcc -o $(XBUILD_DIR)/x-web/index.html src/platforms/web/main.cpp $(SRCS) $(CPP_FLAGS) $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly/lib/libraylib.a -I$(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly/include $(WEB_FLAGS)
 
-$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly:
-	mkdir -p $(OUT_DIR)/deps
-	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly.zip
-	unzip $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly -d $(OUT_DIR)/deps
-	rm $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly.zip 
+$(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly:
+	mkdir -p $(DEPS_DIR)
+	cd $(DEPS_DIR) && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly.zip
+	unzip $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly -d $(DEPS_DIR)
+	rm $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_webassembly.zip 
 

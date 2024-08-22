@@ -44,7 +44,7 @@ $ make web
 
 ### Building releases
 
-All release commands start with **xbuild-...** and the builds can be found in **bin/target/x-...**
+All release commands start with **xbuild-...** and the builds can be found in **bin/release/x-...**
 
 #### Linux
 
