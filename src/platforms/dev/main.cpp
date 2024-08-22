@@ -132,8 +132,15 @@ void unload_api(game::API& api) {
     if (api.handle) {
         if (dlclose(api.handle) != 0) {
             std::cerr << "ERR: Failed to unload library: " << dlerror() << std::endl;
+            return;
         }
         api.handle = nullptr;
+    }
+
+    auto res = std::remove(api.lib_path.c_str());
+    if (res != 0) {
+        std::cerr << "ERR: Could not delete file: " << api.lib_path << std::endl;
+        return;
     }
 }
 
