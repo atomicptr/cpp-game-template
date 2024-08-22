@@ -8,6 +8,7 @@ OBJ_DIR := $(OUT_DIR)/obj
 
 WARN_FLAGS := -pedantic -Wall -Wextra -Wno-unused-parameter -Werror
 CPP_FLAGS := -std=c++20 $(INCLUDE_DIRS)
+CPP_FLAGS_RELEASE := $(CPP_FLAGS) -O3
 
 DIRS := $(shell find src -type d | sed 's/src/./g')
 
@@ -71,3 +72,16 @@ $(OUT_DIR)/deps/raylib/build-web/libraylib.a: $(OUT_DIR)/deps/raylib
 
 clean:
 	rm -rf $(OUT_DIR)/*
+
+### Cross Compilation
+
+xbuild-windows: buildrepo $(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64
+	rm -rf $(OUT_DIR)/target/x-windows
+	mkdir -p $(OUT_DIR)/target/x-windows
+	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) -o $(OUT_DIR)/target/x-windows/$(APP_NAME).exe -target x86_64-windows -L$(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64/lib -I$(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64/include -lraylibdll
+	cp $(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64/lib/raylib.dll $(OUT_DIR)/target/x-windows
+
+$(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64:
+	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/5.0/raylib-5.0_win64_mingw-w64.zip
+	unzip $(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64 -d $(OUT_DIR)/deps
+	rm $(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64.zip 

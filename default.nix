@@ -15,6 +15,7 @@ pkgs.mkShell {
     gcc
     gdb
     gnumake
+    zig
     emscripten
   ];
 
