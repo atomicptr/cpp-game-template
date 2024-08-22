@@ -15,8 +15,6 @@ DIRS := $(shell find src -type d | sed 's/src/./g')
 SRCS := $(shell find src/game -name '*.cpp')
 OBJS := $(patsubst src/game/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
-$(shell mkdir -p $(OBJ_DIR))
-
 all: build
 
 buildrepo:
@@ -27,20 +25,26 @@ $(OBJ_DIR)/%.o: $(SRCS)
 	$(CC) -c $< -o $@
 
 build: buildrepo $(OBJS)
-	$(CC) src/platforms/desktop/main.cpp $(OBJS) $(CPP_FLAGS) -o $(OUT_DIR)/$(APP_NAME)
+	mkdir -p $(OUT_DIR)/target/desktop
+	$(CC) src/platforms/desktop/main.cpp $(OBJS) $(CPP_FLAGS) -o $(OUT_DIR)/target/desktop/$(APP_NAME)
 
 run: build
-	./$(OUT_DIR)/$(APP_NAME)
+	./$(OUT_DIR)/target/desktop/$(APP_NAME)
 
-__dev_dl: filename = $(OUT_DIR)/$(APP_NAME).$(shell date +%s).so
+__dev_dl: filename = $(OUT_DIR)/target/dev/$(APP_NAME).$(shell date +%s).so
 __dev_dl: filename_tmp = $(filename).tmp
 __dev_dl: buildrepo $(OBJS)
+	mkdir -p $(OUT_DIR)/target/dev
 	$(CC) $(OBJS) -shared ${CPP_FLAGS} -o $(filename_tmp)
 	mv $(filename_tmp) $(filename)
 
 __dev_game:
-	$(CC) src/platforms/dev/main.cpp ${CPP_FLAGS} -o $(OUT_DIR)/$(APP_NAME)
-	./$(OUT_DIR)/$(APP_NAME)
+	mkdir -p $(OUT_DIR)/target/dev
+	$(CC) src/platforms/dev/main.cpp ${CPP_FLAGS} -o $(OUT_DIR)/target/dev/$(APP_NAME)
+	./$(OUT_DIR)/target/dev/$(APP_NAME)
 
 dev:
 	bb ./scripts/dev.clj
+
+clean:
+	rm -rf $(OUT_DIR)/*
