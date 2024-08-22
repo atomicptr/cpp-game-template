@@ -4,6 +4,7 @@ in
 pkgs.mkShell {
   packages = with pkgs; [
     babashka
+    http-server
   ];
 
   nativeBuildInputs = with pkgs; [
@@ -14,6 +15,7 @@ pkgs.mkShell {
     gcc
     gdb
     gnumake
+    emscripten
   ];
 
   buildInputs = with pkgs; [

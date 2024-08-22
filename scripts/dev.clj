@@ -10,8 +10,8 @@
 
 ; Deleting old files
 (doseq [file (concat
-              (fs/glob "bin" "**.so")
-              (fs/glob "bin" "**.tmp"))]
+              (fs/glob "bin/target/dev" "**.so")
+              (fs/glob "bin/target/dev" "**.tmp"))]
   (fs/delete file))
 
 (defn on-change [event]

@@ -1,6 +1,8 @@
 /compile_commands.json
 /bin
 /.cache
+/.clj-kondo
+/.lsp
 
 # Created by https://www.toptal.com/developers/gitignore/api/c++,windows,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,windows,macos,linux
