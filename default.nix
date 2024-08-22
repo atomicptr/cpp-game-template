@@ -1,12 +1,12 @@
-let 
-  pkgs = import <nixpkgs> {};
+let
+  pkgs = import <nixpkgs> { };
 in
 pkgs.mkShell {
   packages = with pkgs; [
-    wget
-    unzip
     babashka
     http-server
+    unzip
+    wget
   ];
 
   nativeBuildInputs = with pkgs; [
@@ -14,14 +14,12 @@ pkgs.mkShell {
     clang-tools
 
     bear
+    emscripten
     gcc
     gdb
     gnumake
     zig
-    emscripten
   ];
 
-  buildInputs = with pkgs; [
-    raylib
-  ];
+  buildInputs = with pkgs; [ raylib ];
 }
