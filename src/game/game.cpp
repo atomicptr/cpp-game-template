@@ -53,7 +53,7 @@ void game::draw(game::State* game_state) {
     DrawRectangleRec((Rectangle){game_state->pos.x, game_state->pos.y, 100, 100}, BLUE);
 
     DrawFPS(10, 10);
-    
+
     EndDrawing();
 }
 
@@ -61,6 +61,4 @@ int game::memory_size() {
     return sizeof(game::State);
 }
 
-void game::on_hot_reload(game::State* game_state) {
-}
-
+void game::on_hot_reload(game::State* game_state) {}

@@ -1,11 +1,11 @@
 #include <cassert>
-#include <iostream>
+#include <chrono>
 #include <dlfcn.h>
 #include <filesystem>
-#include <vector>
-#include <chrono>
-#include <string>
+#include <iostream>
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace fs = std::filesystem;
 
@@ -68,7 +68,7 @@ std::optional<std::string> find_newest_api_filename() {
     if (newest == "") {
         return {};
     }
-    
+
     return newest;
 }
 
@@ -80,7 +80,7 @@ std::optional<game::API> load_game_api() {
     }
 
     auto path = path_opt.value();
-    
+
     game::API api;
 
     api.handle = dlopen(path.c_str(), RTLD_LAZY);
@@ -91,12 +91,13 @@ std::optional<game::API> load_game_api() {
 
     dlerror();
 
-    #define LOAD_SYM(name) \
-        *(void **)(&api.name) = dlsym(api.handle, #name); \
-        if (auto err = dlerror(); err != nullptr) { \
-            dlclose(api.handle); \
-            throw std::runtime_error("Cannot load symbol " #name ": " + std::string(err)); \
-        }
+#define LOAD_SYM(name)                                                                \
+    *(void**)(&api.name) = dlsym(api.handle, #name);                                  \
+    if (auto err = dlerror(); err != nullptr) {                                       \
+        dlclose(api.handle);                                                          \
+        std::cerr << "ERR: Cannot load symbol " << #name << ": " << err << std::endl; \
+        return {};                                                                    \
+    }
 
     LOAD_SYM(window_init);
     LOAD_SYM(window_destroy);
@@ -106,7 +107,7 @@ std::optional<game::API> load_game_api() {
     LOAD_SYM(memory_size);
     LOAD_SYM(on_hot_reload);
 
-    #undef LOAD_SYM
+#undef LOAD_SYM
 
     api.lib_path = path;
     api.modtime = fs::last_write_time(fs::path(path)).time_since_epoch().count();
@@ -186,6 +187,10 @@ int main(int argc, char** argv) {
         }
 
         running = api.tick(state);
+    }
+
+    for (auto& old_api : old_apis) {
+        unload_api(old_api);
     }
 
     api.destroy(state);

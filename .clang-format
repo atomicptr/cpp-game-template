@@ -1,0 +1,21 @@
+BasedOnStyle: LLVM
+
+# rules, sort by name
+AlignAfterOpenBracket: DontAlign
+AlignEscapedNewlines: Left
+AlignOperands: DontAlign
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AlwaysBreakBeforeMultilineStrings: false
+BinPackParameters: false
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Attach
+ColumnLimit: 120
+CompactNamespaces: false
+FixNamespaceComments: false
+IndentPPDirectives: BeforeHash
+IndentWidth: 4
+NamespaceIndentation: All
+PointerAlignment: Left
+UseTab: Never
