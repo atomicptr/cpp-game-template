@@ -84,6 +84,7 @@ xbuild-linux: buildrepo $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_am
 	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64/lib/libraylib.a -o $(OUT_DIR)/target/x-linux/$(APP_NAME) -target x86_64-linux-gnu -I$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64/include
 
 $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64:
+	mkdir -p $(OUT_DIR)/deps
 	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz
 	tar xvf $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz -C $(OUT_DIR)/deps
 	rm $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz
@@ -96,6 +97,7 @@ xbuild-windows: buildrepo $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_
 	cp $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/lib/raylib.dll $(OUT_DIR)/target/x-windows
 
 $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64:
+	mkdir -p $(OUT_DIR)/deps
 	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64.zip
 	unzip $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64 -d $(OUT_DIR)/deps
 	rm $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64.zip 
