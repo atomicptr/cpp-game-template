@@ -3,6 +3,8 @@ let
 in
 pkgs.mkShell {
   packages = with pkgs; [
+    wget
+    unzip
     babashka
     http-server
   ];

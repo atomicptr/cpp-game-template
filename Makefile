@@ -3,6 +3,8 @@ APP_NAME := Demo
 CC = g++
 INCLUDE_DIRS := -Isrc
 
+XBUILD_RAYLIB_VERSION := 5.0
+
 OUT_DIR := bin
 OBJ_DIR := $(OUT_DIR)/obj
 
@@ -73,15 +75,27 @@ $(OUT_DIR)/deps/raylib/build-web/libraylib.a: $(OUT_DIR)/deps/raylib
 clean:
 	rm -rf $(OUT_DIR)/*
 
-### Cross Compilation
+### Release Builds / Cross Compilation
 
-xbuild-windows: buildrepo $(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64
+###### Linux
+xbuild-linux: buildrepo $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64
+	rm -rf $(OUT_DIR)/target/x-linux
+	mkdir -p $(OUT_DIR)/target/x-linux
+	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64/lib/libraylib.a -o $(OUT_DIR)/target/x-linux/$(APP_NAME) -target x86_64-linux-gnu -I$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64/include
+
+$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64:
+	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz
+	tar xvf $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz -C $(OUT_DIR)/deps
+	rm $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64.tar.gz
+
+###### Windows
+xbuild-windows: buildrepo $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64
 	rm -rf $(OUT_DIR)/target/x-windows
 	mkdir -p $(OUT_DIR)/target/x-windows
-	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) -o $(OUT_DIR)/target/x-windows/$(APP_NAME).exe -target x86_64-windows -L$(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64/lib -I$(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64/include -lraylibdll
-	cp $(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64/lib/raylib.dll $(OUT_DIR)/target/x-windows
+	zig c++ src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS_RELEASE) -o $(OUT_DIR)/target/x-windows/$(APP_NAME).exe -target x86_64-windows -L$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/lib -I$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/include -lraylibdll
+	cp $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64/lib/raylib.dll $(OUT_DIR)/target/x-windows
 
-$(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64:
-	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/5.0/raylib-5.0_win64_mingw-w64.zip
-	unzip $(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64 -d $(OUT_DIR)/deps
-	rm $(OUT_DIR)/deps/raylib-5.0_win64_mingw-w64.zip 
+$(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64:
+	cd $(OUT_DIR)/deps && wget https://github.com/raysan5/raylib/releases/download/$(XBUILD_RAYLIB_VERSION)/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64.zip
+	unzip $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64 -d $(OUT_DIR)/deps
+	rm $(OUT_DIR)/deps/raylib-$(XBUILD_RAYLIB_VERSION)_win64_mingw-w64.zip 
