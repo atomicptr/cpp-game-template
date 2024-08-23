@@ -15,7 +15,7 @@ pkgs.mkShell {
 
     bear
     emscripten
-    gcc
+    gcc14
     gdb
     gnumake
     zig

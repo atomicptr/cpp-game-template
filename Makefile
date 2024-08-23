@@ -16,7 +16,7 @@ WEB_DIR := $(OUT_DIR)/debug/web
 XBUILD_DIR := $(OUT_DIR)/release
 
 WARN_FLAGS := -pedantic -Wall -Wextra -Wno-unused-parameter -Werror
-CPP_FLAGS := -std=c++20 $(INCLUDE_DIRS)
+CPP_FLAGS := -std=c++26 $(INCLUDE_DIRS)
 CPP_FLAGS_RELEASE := $(CPP_FLAGS) -O3
 
 WEB_FLAGS := -sUSE_GLFW=3 -sASYNCIFY -sGL_ENABLE_GET_PROC_ADDRESS -sSTACK_SIZE=1048576 -sTOTAL_MEMORY=67108864 -sERROR_ON_UNDEFINED_SYMBOLS=0 --shell-file src/platforms/web/shell.html
