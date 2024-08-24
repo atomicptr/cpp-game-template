@@ -20,5 +20,14 @@ pkgs.mkShell {
     emscripten
   ];
 
-  buildInputs = with pkgs; [ raylib ];
+  buildInputs = with pkgs; [
+    raylib
+  ];
+
+  shellHook = with pkgs; ''
+    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [
+      xorg.libX11
+      libglvnd
+    ]}:$LD_LIBRARY_PATH"
+  '';
 }
