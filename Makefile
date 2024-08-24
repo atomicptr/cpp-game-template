@@ -6,7 +6,6 @@ INCLUDE_DIRS := -Isrc
 XBUILD_RAYLIB_VERSION := 5.0
 
 OUT_DIR := bin
-OBJ_DIR := $(OUT_DIR)/obj
 DEPS_DIR := $(OUT_DIR)/deps
 BUILD_RAYLIB_BASE := $(DEPS_DIR)/raylib-$(XBUILD_RAYLIB_VERSION)_linux_amd64
 
@@ -24,29 +23,24 @@ WEB_FLAGS := -sUSE_GLFW=3 -sASYNCIFY -sGL_ENABLE_GET_PROC_ADDRESS -sSTACK_SIZE=1
 DIRS := $(shell find src/game -type d | sed 's/src/./g')
 
 SRCS := $(shell find src/game -name '*.cpp')
-OBJS := $(patsubst src/game/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
 all: build
 
 buildrepo:
 	mkdir -p $(OUT_DIR)
-	for dir in $(DIRS); do mkdir -p $(OBJ_DIR)/$$dir; done
 
-$(OBJ_DIR)/%.o: src/game/%.cpp
-	$(CC) -c $< -o $@ $(CPP_FLAGS)
-
-build: buildrepo $(OBJS) $(BUILD_RAYLIB_BASE)
+build: buildrepo $(BUILD_RAYLIB_BASE)
 	mkdir -p $(DESKTOP_DIR)
-	$(CC) src/platforms/desktop/main.cpp $(OBJS) $(CPP_FLAGS) -o $(DESKTOP_DIR)/$(APP_NAME) -L$(BUILD_RAYLIB_BASE)/lib -I$(BUILD_RAYLIB_BASE)/include -lraylib
+	$(CC) src/platforms/desktop/main.cpp $(SRCS) $(CPP_FLAGS) -o $(DESKTOP_DIR)/$(APP_NAME) -L$(BUILD_RAYLIB_BASE)/lib -I$(BUILD_RAYLIB_BASE)/include -lraylib
 
 run: build
 	./$(DESKTOP_DIR)/$(APP_NAME)
 
 __dev_dl: filename = $(DEV_DIR)/$(APP_NAME).$(shell date +%s).so
 __dev_dl: filename_tmp = $(filename).tmp
-__dev_dl: buildrepo $(OBJS) $(BUILD_RAYLIB_BASE)
+__dev_dl: buildrepo $(BUILD_RAYLIB_BASE)
 	mkdir -p $(DEV_DIR)
-	$(CC) $(OBJS) -shared $(CPP_FLAGS) -o $(filename_tmp) -L$(BUILD_RAYLIB_BASE)/lib -I$(BUILD_RAYLIB_BASE)/include -lraylib
+	$(CC) $(SRCS) -shared $(CPP_FLAGS) -o $(filename_tmp) -L$(BUILD_RAYLIB_BASE)/lib -I$(BUILD_RAYLIB_BASE)/include -lraylib
 	mv $(filename_tmp) $(filename)
 
 __dev_game:
