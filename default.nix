@@ -4,21 +4,20 @@ in
 pkgs.mkShell {
   packages = with pkgs; [
     babashka
+    bear
+    gnumake
     http-server
     unzip
     wget
+    zig
   ];
 
   nativeBuildInputs = with pkgs; [
     # this has to come first
     clang-tools
 
-    bear
+    # web
     emscripten
-    gcc14
-    gdb
-    gnumake
-    zig
   ];
 
   buildInputs = with pkgs; [ raylib ];

@@ -1,6 +1,6 @@
 APP_NAME := Demo
 
-CC = g++
+CC = zig c++
 INCLUDE_DIRS := -Isrc
 
 XBUILD_RAYLIB_VERSION := 5.0
