@@ -66,4 +66,4 @@ $ make xbuild-web
 
 ## License
 
-BSD
+BSD 0-Clause
