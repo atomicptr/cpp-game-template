@@ -21,7 +21,7 @@ CPP_FLAGS_RELEASE := $(CPP_FLAGS) -O3
 
 WEB_FLAGS := -sUSE_GLFW=3 -sASYNCIFY -sGL_ENABLE_GET_PROC_ADDRESS -sSTACK_SIZE=1048576 -sTOTAL_MEMORY=67108864 -sERROR_ON_UNDEFINED_SYMBOLS=0 --shell-file src/platforms/web/shell.html
 
-DIRS := $(shell find src -type d | sed 's/src/./g')
+DIRS := $(shell find src/game -type d | sed 's/src/./g')
 
 SRCS := $(shell find src/game -name '*.cpp')
 OBJS := $(patsubst src/game/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
@@ -32,7 +32,7 @@ buildrepo:
 	mkdir -p $(OUT_DIR)
 	for dir in $(DIRS); do mkdir -p $(OBJ_DIR)/$$dir; done
 
-$(OBJ_DIR)/%.o: $(SRCS)
+$(OBJ_DIR)/%.o: src/game/%.cpp
 	$(CC) -c $< -o $@ $(CPP_FLAGS)
 
 build: buildrepo $(OBJS) $(BUILD_RAYLIB_BASE)
