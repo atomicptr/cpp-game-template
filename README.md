@@ -42,6 +42,24 @@ This will start a web server usually at port 8080 (look into the terminal) and c
 $ make web
 ````
 
+### Debugging
+
+This will build and launch the game with lldb
+
+```bash
+$ make debug
+```
+
+### Generate compile_commands.json
+
+Your text editor / LSP might require a compile_commands.json
+
+Just use this once:
+
+```bash
+$ make compile-commands
+```
+
 ### Building releases
 
 All release commands start with **xbuild-...** and the builds can be found in **bin/release/x-...**
