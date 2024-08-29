@@ -16,9 +16,13 @@ BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
 ColumnLimit: 120
 CompactNamespaces: false
+EmptyLineBeforeAccessModifier: LogicalBlock
 FixNamespaceComments: false
+IndentAccessModifiers: false
 IndentPPDirectives: BeforeHash
 IndentWidth: 4
 NamespaceIndentation: All
 PointerAlignment: Left
 UseTab: Never
+BreakConstructorInitializers: AfterColon
+SpaceBeforeCpp11BracedList: true

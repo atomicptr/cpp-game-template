@@ -30,19 +30,19 @@ bool game::tick(game::State* game_state) {
 
 void game::update(game::State* game_state, float dt) {
     if (IsKeyDown(KEY_W)) {
-        game_state->pos.y -= 200.0 * dt;
+        game_state->pos.y -= 200.0f * dt;
     }
 
     if (IsKeyDown(KEY_S)) {
-        game_state->pos.y += 200.0 * dt;
+        game_state->pos.y += 200.0f * dt;
     }
 
     if (IsKeyDown(KEY_A)) {
-        game_state->pos.x -= 200.0 * dt;
+        game_state->pos.x -= 200.0f * dt;
     }
 
     if (IsKeyDown(KEY_D)) {
-        game_state->pos.x += 200.0 * dt;
+        game_state->pos.x += 200.0f * dt;
     }
 }
 
@@ -61,6 +61,4 @@ int game::memory_size() {
     return sizeof(game::State);
 }
 
-void game::on_hot_reload(game::State* game_state) {
-    
-}
+void game::on_hot_reload(game::State* game_state) {}

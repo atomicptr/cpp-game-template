@@ -1,5 +1,5 @@
+#include "../../game/game.hpp"
 #include <emscripten/emscripten.h>
-#include <game/game.hpp>
 
 game::State* state = nullptr;
 

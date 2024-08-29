@@ -19,7 +19,7 @@
 
 (try
   (shell "make" "build-web")
-  (shell "http-server" "bin/target/web")
+  (shell "http-server" "bin/debug/web")
   (catch Exception e
     (println "ERR: Could not build project. " (.getMessage e)))
   (System/exit 1))

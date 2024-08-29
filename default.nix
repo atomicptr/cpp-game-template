@@ -12,16 +12,15 @@ pkgs.mkShell {
     zig
   ];
 
-  nativeBuildInputs = with pkgs; [
+  buildInputs = with pkgs; [
     # this has to come first
-    clang-tools
+    llvmPackages_19.clang-tools
+
+    clang
+    raylib
 
     # web
     emscripten
-  ];
-
-  buildInputs = with pkgs; [
-    raylib
   ];
 
   shellHook = with pkgs; ''

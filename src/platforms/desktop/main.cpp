@@ -1,4 +1,4 @@
-#include <game/game.hpp>
+#include "../../game/game.hpp"
 
 int main(void) {
     game::window_init();

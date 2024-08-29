@@ -46,7 +46,7 @@ std::optional<std::string> find_newest_api_filename() {
     std::string newest = "";
     fs::file_time_type newest_time = fs::file_time_type::min();
 
-    for (auto const& entry : fs::directory_iterator{dir}) {
+    for (auto const& entry : fs::directory_iterator {dir}) {
         auto p = entry.path();
 
         if (!p.stem().string().starts_with(exec_name)) {
