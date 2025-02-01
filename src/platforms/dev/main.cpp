@@ -34,7 +34,7 @@ namespace game {
     };
 }
 
-std::string exec_path = "";
+auto exec_path = std::string{""};
 
 std::optional<std::string> find_newest_api_filename() {
     assert(exec_path != "");
@@ -49,7 +49,7 @@ std::optional<std::string> find_newest_api_filename() {
     for (auto const& entry : fs::directory_iterator {dir}) {
         auto p = entry.path();
 
-        if (!p.stem().string().starts_with(exec_name)) {
+        if (p.stem().string().rfind(exec_name, 0) != 0) {
             continue;
         }
 
