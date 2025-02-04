@@ -3,36 +3,11 @@ cmake_minimum_required(VERSION 3.30)
 project(cpp-game-template)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-### setup dependencies
-include(FetchContent)
-
-###### raylib
-set(RAYLIB_VERSION 5.5)
-FetchContent_Declare(
-  raylib
-  URL "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz"
-  FIND_PACKAGE_ARGS ${RAYLIB_VERSION} EXACT
-)
-set(BUILD_EXAMPLES OFF CACHE INTERNAL "")
-FetchContent_MakeAvailable(raylib)
-
-###### vendor dir
-include_directories("vendor")
-
-### setup project
-include_directories("src/game")
-
-file(GLOB_RECURSE SRC_FILES "src/game/*.cpp")
-
-add_executable(${PROJECT_NAME} src/platforms/desktop/main.cpp ${SRC_FILES})
-target_link_libraries(${PROJECT_NAME} raylib)
-
-target_compile_options(
-  ${PROJECT_NAME} PRIVATE
+set(CXX_WARN_FLAGS
   -Wall
   -Wextra
   -pedantic
@@ -49,3 +24,53 @@ target_compile_options(
   -Woverloaded-virtual
   -Werror
 )
+
+option(HOTRELOAD "Enable hot-reload build" OFF)
+
+### setup dependencies
+include(FetchContent)
+
+###### raylib
+set(RAYLIB_VERSION 5.5)
+FetchContent_Declare(
+  raylib
+  URL "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz"
+  FIND_PACKAGE_ARGS ${RAYLIB_VERSION} EXACT
+)
+set(BUILD_EXAMPLES OFF CACHE INTERNAL "")
+
+if (HOTRELOAD)
+  set(BUILD_SHARED_LIBS ON INTERNAL)
+endif()
+
+FetchContent_MakeAvailable(raylib)
+
+###### vendor dir
+include_directories("vendor")
+
+### setup project
+include_directories("src/game")
+
+file(GLOB_RECURSE SRC_FILES "src/game/*.cpp")
+
+if (NOT HOTRELOAD)
+  add_executable(${PROJECT_NAME} src/platforms/desktop/main.cpp ${SRC_FILES})
+  target_link_libraries(${PROJECT_NAME} raylib)
+  target_compile_options(${PROJECT_NAME} PRIVATE ${CXX_WARN_FLAGS})
+else()
+  add_library(${PROJECT_NAME}-lib SHARED ${SRC_FILES})
+  set_target_properties(${PROJECT_NAME}-lib PROPERTIES PREFIX "" SUFFIX ".so.tmp")
+  target_link_libraries(${PROJECT_NAME}-lib raylib)
+  target_compile_options(${PROJECT_NAME}-lib PRIVATE ${CXX_WARN_FLAGS})
+
+  # after build rename file from "project-name-lib.so.tmp" to "project-name.TIMESTAMP.so"
+  execute_process(COMMAND date +%s OUTPUT_VARIABLE TIMESTAMP OUTPUT_STRIP_TRAILING_WHITESPACE)
+  add_custom_command(TARGET ${PROJECT_NAME}-lib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E rename
+      $<TARGET_FILE:${PROJECT_NAME}-lib>
+      $<TARGET_FILE_DIR:${PROJECT_NAME}-lib>/$<TARGET_FILE_BASE_NAME:${PROJECT_NAME}>.${TIMESTAMP}.so
+  )
+
+  add_executable(${PROJECT_NAME} src/platforms/dev/main.cpp)
+  target_link_libraries(${PROJECT_NAME} raylib)
+endif()
