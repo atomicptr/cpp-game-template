@@ -61,4 +61,4 @@ int game::memory_size() {
     return sizeof(game::State);
 }
 
-void game::on_hot_reload(game::State* game_state) {}
+void game::on_hot_reload(game::State*) {}
