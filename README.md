@@ -6,7 +6,7 @@ A simple C++ game template using Raylib for making games on Linux
 
 - Code hot reloading
 - Web export (emscripten)
-- Windows builds
+- Windows builds (mingw)
 
 ## Requirements
 
@@ -18,6 +18,7 @@ If not using devenv you need to install these on your own:
 - CMake (3.30+)
 - gcc 14+
 - Emscripten (used for web export)
+- mingw (for windows cross compilation)
 
 ## How to use
 
@@ -44,6 +45,28 @@ This will start a web server usually at port 8080 (look into the terminal) and c
 ```bash
 $ just web
 ````
+
+### Building releases
+
+All release commands start with **xbuild-...** and the builds can be found in **build/xbuild/...**
+
+#### Linux
+
+```bash
+$ make xbuild-linux
+```
+
+#### Windows
+
+```bash
+$ make xbuild-windows
+```
+
+#### Web
+
+```bash
+$ make xbuild-web
+```
 
 ## License
 
