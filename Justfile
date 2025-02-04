@@ -16,9 +16,9 @@ __dev_build:
     cmake --build build
 
 xbuild-linux:
-    cmake -DXBUILD_RELEASE=ON -B build/xbuild/linux
+    cmake -DCMAKE_BUILD_TYPE=Release -B build/xbuild/linux
     cmake --build build/xbuild/linux
 
 xbuild-windows:
-    cmake -DCMAKE_TOOLCHAIN_FILE=cross/windows.cmake -B build/xbuild/windows
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=cross/windows.cmake -B build/xbuild/windows
     cmake --build build/xbuild/windows

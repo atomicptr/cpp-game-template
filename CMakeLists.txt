@@ -3,11 +3,14 @@ cmake_minimum_required(VERSION 3.30)
 project(cpp-game-template)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_BUILD_TYPE Debug)
+
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
 
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CXX_WARN_FLAGS
+set(CPP_WARN_FLAGS
   -Wall
   -Wextra
   -pedantic
@@ -26,10 +29,6 @@ set(CXX_WARN_FLAGS
 )
 
 option(HOTRELOAD "Enable hot-reload build" OFF)
-
-if (XBUILD_RELEASE)
-  set(CMAKE_BUILD_TYPE Release)
-endif()
 
 ### setup dependencies
 include(FetchContent)
@@ -60,12 +59,12 @@ file(GLOB_RECURSE SRC_FILES "src/game/*.cpp")
 if (NOT HOTRELOAD)
   add_executable(${PROJECT_NAME} src/platforms/desktop/main.cpp ${SRC_FILES})
   target_link_libraries(${PROJECT_NAME} PRIVATE raylib -static-libgcc -static-libstdc++)
-  target_compile_options(${PROJECT_NAME} PRIVATE ${CXX_WARN_FLAGS})
+  target_compile_options(${PROJECT_NAME} PRIVATE ${CPP_WARN_FLAGS})
 else()
   add_library(${PROJECT_NAME}-lib SHARED ${SRC_FILES})
   set_target_properties(${PROJECT_NAME}-lib PROPERTIES PREFIX "" SUFFIX ".so.tmp")
   target_link_libraries(${PROJECT_NAME}-lib raylib)
-  target_compile_options(${PROJECT_NAME}-lib PRIVATE ${CXX_WARN_FLAGS})
+  target_compile_options(${PROJECT_NAME}-lib PRIVATE ${CPP_WARN_FLAGS})
 
   # after build rename file from "project-name-lib.so.tmp" to "project-name.TIMESTAMP.so"
   execute_process(COMMAND date +%s OUTPUT_VARIABLE TIMESTAMP OUTPUT_STRIP_TRAILING_WHITESPACE)
