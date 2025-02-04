@@ -53,19 +53,19 @@ All release commands start with **xbuild-...** and the builds can be found in **
 #### Linux
 
 ```bash
-$ make xbuild-linux
+$ just xbuild-linux
 ```
 
 #### Windows
 
 ```bash
-$ make xbuild-windows
+$ just xbuild-windows
 ```
 
 #### Web
 
 ```bash
-$ make xbuild-web
+$ just xbuild-web
 ```
 
 ## License
