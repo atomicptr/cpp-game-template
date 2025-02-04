@@ -20,6 +20,6 @@
     emscripten
 
     # for cross compiling windows
-    pkgs.pkgsCross.mingw32.buildPackages.gcc14
+    pkgs.pkgsCross.mingwW64.buildPackages.gcc14
   ];
 }
