@@ -27,6 +27,10 @@ set(CXX_WARN_FLAGS
 
 option(HOTRELOAD "Enable hot-reload build" OFF)
 
+if (XBUILD_RELEASE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 ### setup dependencies
 include(FetchContent)
 
@@ -55,7 +59,7 @@ file(GLOB_RECURSE SRC_FILES "src/game/*.cpp")
 
 if (NOT HOTRELOAD)
   add_executable(${PROJECT_NAME} src/platforms/desktop/main.cpp ${SRC_FILES})
-  target_link_libraries(${PROJECT_NAME} raylib)
+  target_link_libraries(${PROJECT_NAME} PRIVATE raylib -static-libgcc -static-libstdc++)
   target_compile_options(${PROJECT_NAME} PRIVATE ${CXX_WARN_FLAGS})
 else()
   add_library(${PROJECT_NAME}-lib SHARED ${SRC_FILES})

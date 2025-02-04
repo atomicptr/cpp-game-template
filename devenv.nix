@@ -14,7 +14,12 @@
     xorg.libXi
     libglvnd
 
-    emscripten
     gcc14
+
+    # for cross compiling web
+    emscripten
+
+    # for cross compiling windows
+    pkgs.pkgsCross.mingw32.buildPackages.gcc14
   ];
 }
