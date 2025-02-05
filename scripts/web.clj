@@ -11,14 +11,14 @@
   (println "Watcher Event: " event)
   (try
     (println "### Rebuilding web")
-    (shell "make" "build-web")
+    (shell "just" "web")
     (catch Exception e
       (println "ERR: When rebuilding web " (.getMessage e)))))
 
 (fw/watch "src/game" on-change {:delay-ms 100 :recursive true})
 
 (try
-  (shell "make" "build-web")
+  (shell "just" "web")
   (shell "http-server" "bin/debug/web")
   (catch Exception e
     (println "ERR: Could not build project. " (.getMessage e)))

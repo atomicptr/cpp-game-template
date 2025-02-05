@@ -1,7 +1,7 @@
 #!/usr/bin/env bb
 
 (def executable-name "demo_dev")
-(def base-path "build")
+(def base-path "build/dev")
 
 (require '[babashka.pods :as pods])
 
@@ -21,15 +21,15 @@
   (println "Watcher Event: " event)
   (try
     (println "### Rebuilding dynlib")
-    (shell "just" "build")
+    (shell "just" "__dev_rebuild")
     (catch Exception e
       (println "ERR: When rebuilding the dynamic lib. " (.getMessage e)))))
 
 (fw/watch "src/game" on-change {:delay-ms 100 :recursive true})
 
 (try
-  (shell "just" "build")
-  (shell (str "./build/" executable-name))
+  (shell "just" "__dev_rebuild")
+  (shell (str base-path "/" executable-name))
   (catch Exception e
     (println "ERR: Could not build project. " (.getMessage e)))
   (System/exit 1))
