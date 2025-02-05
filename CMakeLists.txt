@@ -57,9 +57,27 @@ include_directories("src/game")
 file(GLOB_RECURSE SRC_FILES "src/game/*.cpp")
 
 if (NOT HOTRELOAD)
-  add_executable(${PROJECT_NAME} src/platforms/desktop/main.cpp ${SRC_FILES})
-  target_link_libraries(${PROJECT_NAME} PRIVATE raylib -static-libgcc -static-libstdc++)
-  target_compile_options(${PROJECT_NAME} PRIVATE ${CPP_WARN_FLAGS})
+  if (NOT EMSCRIPTEN)
+    add_executable(${PROJECT_NAME} src/platforms/desktop/main.cpp ${SRC_FILES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE raylib -static-libgcc -static-libstdc++)
+    target_compile_options(${PROJECT_NAME} PRIVATE ${CPP_WARN_FLAGS})
+  else()
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    add_executable(${PROJECT_NAME} src/platforms/web/main.cpp ${SRC_FILES})
+    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "index")
+    target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+    target_compile_options(${PROJECT_NAME} PRIVATE ${CPP_WARN_FLAGS})
+    target_link_options(
+      ${PROJECT_NAME} PRIVATE
+        -sUSE_GLFW=3
+        -sASYNCIFY
+        -sGL_ENABLE_GET_PROC_ADDRESS
+        -sSTACK_SIZE=1048576
+        -sTOTAL_MEMORY=67108864
+        -sERROR_ON_UNDEFINED_SYMBOLS=0
+        --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/src/platforms/web/shell.html
+    )
+  endif()
 else()
   add_library(${PROJECT_NAME}-lib SHARED ${SRC_FILES})
   set_target_properties(${PROJECT_NAME}-lib PROPERTIES PREFIX "" SUFFIX ".so.tmp")

@@ -3,9 +3,10 @@
 {
   packages = with pkgs; [
     llvmPackages_19.clang-tools
-    cmake
-    just
     babashka
+    cmake
+    http-server
+    just
 
     xorg.libX11
     xorg.libXrandr
