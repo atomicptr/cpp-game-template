@@ -35,3 +35,13 @@ xbuild-linux:
 xbuild-windows:
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=cmake/xbuild-windows.cmake -B build/xbuild/windows
     cmake --build build/xbuild/windows -j8
+
+xbuild-web:
+    #!/usr/bin/env bash
+    export EMROOT="$(dirname $(dirname $(which emcc)))/share/emscripten"
+    cp -r $EMROOT/cache build/web/.emcache
+    export EM_CACHE=$(pwd)/build/web/.emcache
+    chmod u+rwX -R $EM_CACHE
+
+    cmake -DCMAKE_BUILD_TYPE=Release -DPLATFORM=Web -DCMAKE_TOOLCHAIN_FILE=$EMROOT/cmake/Modules/Platform/Emscripten.cmake -B build/xbuild/web
+    cmake --build build/xbuild/web -j8

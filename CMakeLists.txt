@@ -75,6 +75,7 @@ if (NOT HOTRELOAD)
         -sSTACK_SIZE=1048576
         -sTOTAL_MEMORY=67108864
         -sERROR_ON_UNDEFINED_SYMBOLS=0
+        -sMINIFY_HTML=0 # TODO: workaround because this is not possible on nixos rn
         --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/src/platforms/web/shell.html
     )
   endif()
