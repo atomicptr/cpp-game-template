@@ -7,19 +7,21 @@
 (require '[babashka.process :refer [shell]]
          '[pod.babashka.fswatcher :as fw])
 
+(def target-dir "build/web")
+
 (defn on-change [event]
   (println "Watcher Event: " event)
   (try
     (println "### Rebuilding web")
-    (shell "make" "build-web")
+    (shell "just" "__web_build")
     (catch Exception e
       (println "ERR: When rebuilding web " (.getMessage e)))))
 
 (fw/watch "src/game" on-change {:delay-ms 100 :recursive true})
 
 (try
-  (shell "make" "build-web")
-  (shell "http-server" "bin/debug/web")
+  (shell "just" "__web_build")
+  (shell "http-server" target-dir)
   (catch Exception e
     (println "ERR: Could not build project. " (.getMessage e)))
   (System/exit 1))

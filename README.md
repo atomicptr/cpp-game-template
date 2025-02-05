@@ -6,24 +6,28 @@ A simple C++ game template using Raylib for making games on Linux
 
 - Code hot reloading
 - Web export (emscripten)
-- Windows builds
+- Windows builds (mingw)
 
 ## Requirements
 
-- Nix package manager (optional, but provides everything below)
+- Devenv
+
+If not using devenv you need to install these on your own:
+
 - [babashka](https://babashka.org/) - Used for some scripts (required for hot reload)
-- Make
-- Zig compiler (used for cross compiling)
+- CMake (3.30+)
+- gcc 14+
 - Emscripten (used for web export)
+- mingw (for windows cross compilation)
 
 ## How to use
 
 ### Just run
 
-Just
+Just do
 
 ```bash
-$ make run
+$ just run
 ```
 
 ### Hot reloading
@@ -31,7 +35,7 @@ $ make run
 This will launch a babashka script that checks for changes in src/game and builds a dynamic library which the executable will load and replace some function pointers
 
 ```bash
-$ make dev
+$ just dev
 ```
 
 ### Web
@@ -39,47 +43,29 @@ $ make dev
 This will start a web server usually at port 8080 (look into the terminal) and compile the game. This will also auto rebuild on changes although you need to reload the website (disable cache, do Ctrl + F5)
 
 ```bash
-$ make web
+$ just web
 ````
-
-### Debugging
-
-This will build and launch the game with lldb
-
-```bash
-$ make debug
-```
-
-### Generate compile_commands.json
-
-Your text editor / LSP might require a compile_commands.json
-
-Just use this once:
-
-```bash
-$ make compile-commands
-```
 
 ### Building releases
 
-All release commands start with **xbuild-...** and the builds can be found in **bin/release/x-...**
+All release commands start with **xbuild-...** and the builds can be found in **build/xbuild/...**
 
 #### Linux
 
 ```bash
-$ make xbuild-linux
+$ just xbuild-linux
 ```
 
 #### Windows
 
 ```bash
-$ make xbuild-windows
+$ just xbuild-windows
 ```
 
 #### Web
 
 ```bash
-$ make xbuild-web
+$ just xbuild-web
 ```
 
 ## License

@@ -3,6 +3,7 @@
 /.cache
 /.clj-kondo
 /.lsp
+/build
 
 # Created by https://www.toptal.com/developers/gitignore/api/c++,windows,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,windows,macos,linux
@@ -117,3 +118,12 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,windows,macos,linux
 
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
