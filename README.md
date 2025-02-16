@@ -6,7 +6,8 @@ A simple C++ game template using Raylib for making games on Linux
 
 - Code hot reloading
 - Web export (emscripten)
-- Windows builds (mingw)
+- Windows builds (cross compiling / mingw)
+- CI and CD using Github Actions, creates a Linux, Windows and Web release build on tags
 
 ## Requirements
 
