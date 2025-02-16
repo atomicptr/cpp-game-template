@@ -1,0 +1,54 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        config:
+          - name: linux/gcc
+            os: ubuntu-latest
+            cc: gcc-14
+            cxx: g++-14
+          - name: linux/clang
+            os: ubuntu-latest
+            cc: clang-18
+            cxx: clang++-18
+          - name: windows/msvc
+            os: windows-latest
+            cc: null
+            cxx: null
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: extractions/setup-just@v2
+      - uses: lukka/get-cmake@latest
+
+      - name: install linux dependencies
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sudo apt install \
+            libasound2-dev \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libwayland-dev \
+            libx11-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbcommon-dev \
+            libxrandr-dev
+
+      - name: build ${{ matrix.config.name }}
+        env:
+          CC: ${{ matrix.config.cc }}
+          CXX: ${{ matrix.config.cxx }}
+        run: just build

@@ -8,25 +8,34 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CPP_WARN_FLAGS
-  -Wall
-  -Wextra
-  -pedantic
-  -Wno-unused-parameter
-  -Werror
-  -Weffc++
-  -Wshadow
-  -Wunused-local-typedefs
-  -Wmisleading-indentation
-  -Wdouble-promotion
-  -Wnull-dereference
-  -Wzero-as-null-pointer-constant
-  -Wnon-virtual-dtor
-  -Woverloaded-virtual
-  -Werror
-)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(CPP_WARN_FLAGS
+    -Wall
+    -Wextra
+    -pedantic
+    -Wno-unused-parameter
+    -Werror
+    -Wunused-local-typedefs
+    -Wmisleading-indentation
+    -Wdouble-promotion
+    -Wnull-dereference
+    -Wzero-as-null-pointer-constant
+    -Wnon-virtual-dtor
+    -Woverloaded-virtual
+    -Werror
+  )
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  set(CPP_WARN_FLAGS
+    /W4
+    /wd4100
+    /wd4458
+    /wd26812
+    #/WX
+  )
+endif()
 
 option(HOTRELOAD "Enable hot-reload build" OFF)
 
@@ -38,6 +47,7 @@ set(RAYLIB_VERSION 5.5)
 FetchContent_Declare(
   raylib
   URL "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz"
+  SYSTEM
   FIND_PACKAGE_ARGS ${RAYLIB_VERSION} EXACT
 )
 set(BUILD_EXAMPLES OFF CACHE INTERNAL "")
@@ -49,7 +59,7 @@ endif()
 FetchContent_MakeAvailable(raylib)
 
 ###### vendor dir
-include_directories("vendor")
+include_directories(SYSTEM "vendor")
 
 ### setup project
 include_directories("src/game")
