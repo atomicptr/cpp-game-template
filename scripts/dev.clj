@@ -8,7 +8,7 @@
          '[babashka.process :refer [shell]]
          '[pod.babashka.fswatcher :as fw])
 
-(def target-dir "build")
+(def target-dir "build/dev")
 
 ; Deleting old files
 (doseq [file (concat

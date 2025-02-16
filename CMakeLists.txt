@@ -4,10 +4,6 @@ project(cpp-game-template)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
-endif()
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -68,11 +64,13 @@ file(GLOB_RECURSE SRC_FILES "src/game/*.cpp")
 
 if (NOT HOTRELOAD)
   if (NOT EMSCRIPTEN)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     add_executable(${PROJECT_NAME} src/platforms/desktop/main.cpp ${SRC_FILES})
     target_link_libraries(${PROJECT_NAME} PRIVATE raylib -static-libgcc -static-libstdc++)
     target_compile_options(${PROJECT_NAME} PRIVATE ${CPP_WARN_FLAGS})
   else()
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/www)
     add_executable(${PROJECT_NAME} src/platforms/web/main.cpp ${SRC_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "index")
     target_link_libraries(${PROJECT_NAME} PRIVATE raylib)

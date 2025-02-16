@@ -1,0 +1,80 @@
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        config:
+          - name: cpp-game-template-linux-x86_64
+            os: ubuntu-latest
+            cc: gcc-14
+            cxx: g++-14
+            buildcmd: xbuild-github
+            buildroot: build/xbuild/github/bin
+          - name: cpp-game-template-web
+            os: ubuntu-latest
+            cc: null
+            cxx: null
+            buildcmd: xbuild-web
+            buildroot: build/xbuild/web/www
+          - name: cpp-game-template-windows-x86_64
+            os: windows-latest
+            cc: null
+            cxx: null
+            buildcmd: xbuild-github
+            buildroot: build/xbuild/github/bin
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: extractions/setup-just@v2
+      - uses: lukka/get-cmake@latest
+
+      - name: install linux dependencies
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sudo apt install \
+            libasound2-dev \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libwayland-dev \
+            libx11-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbcommon-dev \
+            libxrandr-dev
+
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.74
+        if: matrix.config.buildcmd == 'xbuild-web'
+
+      - name: build ${{ matrix.config.name }}
+        env:
+          CC: ${{ matrix.config.cc }}
+          CXX: ${{ matrix.config.cxx }}
+        run: |
+          just ${{ matrix.config.buildcmd }}
+
+      - name: "compress unix: ${{ matrix.config.name }}"
+        if: matrix.config.os != 'windows-latest'
+        run: |
+          zip -jr ${{ matrix.config.name }}.zip ${{ matrix.config.buildroot }}/*
+
+      - name: "compress windows: ${{ matrix.config.name }}"
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          Compress-Archive -Path ${{ matrix.config.buildroot }}/* -Destination ${{ matrix.config.name }}.zip
+
+      - name: upload ${{ matrix.config.name }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.config.name }}.zip

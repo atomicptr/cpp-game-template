@@ -21,7 +21,7 @@
 
 (try
   (shell "just" "__web_build")
-  (shell "http-server" target-dir)
+  (shell "http-server" (str target-dir "/www"))
   (catch Exception e
     (println "ERR: Could not build project. " (.getMessage e)))
   (System/exit 1))
