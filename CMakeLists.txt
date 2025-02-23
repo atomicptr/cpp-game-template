@@ -58,8 +58,6 @@ FetchContent_MakeAvailable(raylib)
 include_directories(SYSTEM "vendor")
 
 ### setup project
-include_directories("src/game")
-
 file(GLOB_RECURSE SRC_FILES "src/game/*.cpp")
 
 if (NOT HOTRELOAD)
